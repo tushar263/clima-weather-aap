@@ -23,7 +23,7 @@ class _LocationScreenState extends State<LocationScreen> {
 
   void updateUI(dynamic weatherdata) {
     double temperature = weatherdata['main']['temp'];
-    temp = temperature.toInt();
+    temp = temperature.toInt() - 263;
     int condition = weatherdata['weather'][0]['id'];
     cityname = weatherdata['name'];
     weathericon = weather.getWeatherIcon(condition);
@@ -45,14 +45,18 @@ class _LocationScreenState extends State<LocationScreen> {
         constraints: BoxConstraints.expand(),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() async{
+                        updateUI( await weather.getweatherdata());
+                      });
+                    },
                     child: Icon(
                       Icons.near_me,
                       size: 50.0,
@@ -67,6 +71,9 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                 ],
               ),
+              // SizedBox(
+              //   height: 300,
+              // ),
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Row(
@@ -83,9 +90,9 @@ class _LocationScreenState extends State<LocationScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(right: 15.0),
+                padding: EdgeInsets.only(right: 5.0),
                 child: Text(
-                 msg,
+                  msg,
                   textAlign: TextAlign.right,
                   style: kMessageTextStyle,
                 ),
