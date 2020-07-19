@@ -30,7 +30,7 @@ class _LocationScreenState extends State<LocationScreen> {
         msg = '';
         return;
       }
-      double temperature = weatherdata['main']['temp'];
+      var temperature = weatherdata['main']['temp'];
       temp = temperature.toInt();
       int condition = weatherdata['weather'][0]['id'];
       cityname = weatherdata['name'];
@@ -80,7 +80,7 @@ class _LocationScreenState extends State<LocationScreen> {
                         ),
                       );
                       if (typedname != null) {
-                        updateUI(await weather.getcityweather(cityname))
+                        updateUI(await weather.getcityweather(typedname))
                         ;
                       }
                     },
