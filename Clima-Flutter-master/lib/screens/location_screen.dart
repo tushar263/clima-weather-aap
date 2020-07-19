@@ -1,3 +1,4 @@
+import 'package:clima/screens/city_screen.dart';
 import 'package:clima/services/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
@@ -22,12 +23,20 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   void updateUI(dynamic weatherdata) {
-    double temperature = weatherdata['main']['temp'];
-    temp = temperature.toInt() - 263;
-    int condition = weatherdata['weather'][0]['id'];
-    cityname = weatherdata['name'];
-    weathericon = weather.getWeatherIcon(condition);
-    msg = weather.getMessage(temp);
+    setState(() {
+      if (weatherdata == null) {
+        temp = 0;
+        weathericon = 'error';
+        msg = '';
+        return;
+      }
+      double temperature = weatherdata['main']['temp'];
+      temp = temperature.toInt();
+      int condition = weatherdata['weather'][0]['id'];
+      cityname = weatherdata['name'];
+      weathericon = weather.getWeatherIcon(condition);
+      msg = weather.getMessage(temp);
+    });
   }
 
   @override
@@ -45,17 +54,15 @@ class _LocationScreenState extends State<LocationScreen> {
         constraints: BoxConstraints.expand(),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FlatButton(
-                    onPressed: () {
-                      setState(() async{
-                        updateUI( await weather.getweatherdata());
-                      });
+                    onPressed: () async {
+                      updateUI(await weather.getweatherdata());
                     },
                     child: Icon(
                       Icons.near_me,
@@ -63,7 +70,20 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      var typedname = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return CityScreen();
+                          },
+                        ),
+                      );
+                      if (typedname != null) {
+                        updateUI(await weather.getcityweather(cityname))
+                        ;
+                      }
+                    },
                     child: Icon(
                       Icons.location_city,
                       size: 50.0,
@@ -89,10 +109,11 @@ class _LocationScreenState extends State<LocationScreen> {
                   ],
                 ),
               ),
+
               Padding(
                 padding: EdgeInsets.only(right: 5.0),
                 child: Text(
-                  msg,
+                  ' $msg in $cityname',
                   textAlign: TextAlign.right,
                   style: kMessageTextStyle,
                 ),
